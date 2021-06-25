@@ -31,3 +31,13 @@ body{
   overflow: auto;
   height: 80vh;
 }
+
+.success-message {
+  width: 100%;
+  display: inline-block;
+  padding: 5px;
+  background: green;
+  color: #fff;
+ 
+  margin: 0.5rem 0;
+}

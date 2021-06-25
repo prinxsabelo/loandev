@@ -2,6 +2,8 @@ import axios from "axios";
 import { useSnackbar } from 'react-simple-snackbar'
 import { useState, useEffect } from "react";
 import Moment from 'react-moment';
+import { usePaystackPayment } from 'react-paystack';
+
 
 const Staff = ({ history }) => {
     const [lastname, setLastname] = useState("");
@@ -13,6 +15,8 @@ const Staff = ({ history }) => {
     const [request_amount, setAmount] = useState("");
     const [request_message, setMessage] = useState("");
     const [openSnackbar, closeSnackbar] = useSnackbar();
+    const [loanDetail, setLoanDetail] = useState({});
+
     const config = {
         header: {
             "Content-Type": "application/json",
@@ -44,6 +48,47 @@ const Staff = ({ history }) => {
         localStorage.removeItem("staffAuthToken");
         history.push("/staff");
     }
+
+    // const initializePayment = async (loan) => {
+    //     setLoanDetail(loan);
+
+
+    //     const initializePayment = usePaystackPayment(config);
+    //     initializePayment(onSuccess, onClose);
+    // }
+
+    const PaystackHook = ({ loan }) => {
+        const config = {
+            reference: (new Date()).getTime(),
+            email: email,
+            amount: loan.request_amount * 100,
+            publicKey: 'pk_test_4a6fbf031c4ed6e9985f1c1eaa5ecaec081c2c80',
+            metadata: loan
+        };
+        const initializePayment = usePaystackPayment(config);
+        return (
+            <div>
+                <button className="p-2 bg-green-800 text-white hover:bg-green-900 hover:shadow" onClick={() => {
+                    setLoanDetail(loan);
+                    localStorage.setItem("loan", JSON.stringify(loan));
+                    initializePayment(onSuccess, onClose)
+                }}>Refund Loan</button>
+            </div>
+        );
+    };
+
+    // success response for loan payment
+    const onSuccess = (reference) => {
+        console.log(reference);
+        refundLoan();
+    };
+
+
+    const onClose = () => {
+
+        console.log('closed')
+    }
+
     const fetchLoans = async () => {
         if (loader) {
             console.log(staff_id);
@@ -61,7 +106,9 @@ const Staff = ({ history }) => {
             }
         }
     }
-    const refundLoan = async (loan) => {
+    const refundLoan = async () => {
+        // console.log(loan, "LOAN")
+        let loan = localStorage.loan ? JSON.parse(localStorage.loan) : {};
         setLoader(true);
         try {
             const { data } = await axios.put(
@@ -71,6 +118,7 @@ const Staff = ({ history }) => {
             );
             fetchLoans();
             openSnackbar(data.message);
+            localStorage.removeItem("loan")
         } catch (error) {
             setLoader(false);
         }
@@ -183,7 +231,8 @@ const Staff = ({ history }) => {
                                     </div>
                                     {loan.status === "DISBURSED" &&
                                         <div className="mt-2">
-                                            <button onClick={() => refundLoan(loan)} className="p-2 bg-green-800 text-white hover:bg-green-900 hover:shadow">Refund Loan</button>
+                                            <PaystackHook loan={loan} />
+                                            {/* <button onClick={() => initializePayment(loan)} className="p-2 bg-green-800 text-white hover:bg-green-900 hover:shadow">Refund Loan</button> */}
                                         </div>
                                     }
                                     {/* {

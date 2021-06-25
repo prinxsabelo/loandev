@@ -1,6 +1,16 @@
+// require("dotenv").config({ path: "./config.env" });
+
 const Staff = require('../../models/Staff');
 const Loan = require('../../models/Loan');
 const ErrorResponse = require('../../utils/errorResponse');
+
+const Paystack = require('paystack-node');
+let PAYMENT_API_KEY = process.env.PAYMENT_API_KEY;
+
+const environment = process.env.NODE_ENV;
+
+const paystack = new Paystack(PAYMENT_API_KEY, environment)
+
 const mongoose = require('mongoose');
 
 const nodemailer = require('nodemailer');
@@ -51,20 +61,20 @@ exports.requestLoan = async (req, res, next) => {
 
 
             //Sending email here..
-            const mailOptions = {
-                from: process.env.EMAIL_FROM,
-                to: staff.email,
-                subject,
-                html: message
-            }
-            transporter.sendMail(mailOptions, function (err, data) {
-                if (err) {
-                    return next(new ErrorResponse(err, 500));
-                }
-                else {
-                    res.status(200).json({ success: true, message: "Loan request was successful.. Response coming from admin soon.." })
-                }
-            })
+            // const mailOptions = {
+            //     from: process.env.EMAIL_FROM,
+            //     to: staff.email,
+            //     subject,
+            //     html: message
+            // }
+            // transporter.sendMail(mailOptions, function (err, data) {
+            //     if (err) {
+            //         return next(new ErrorResponse(`Check your email host.. ${err}`, 500));
+            //     }
+            //     else {
+            res.status(200).json({ success: true, message: "Loan request was successful.. Response coming from admin soon.." })
+            // }
+            // })
 
 
         } catch (error) {
@@ -95,6 +105,7 @@ exports.getLoansByStaffId = async (req, res, next) => {
 
 //Staff can repay loan here..
 exports.paybackLoan = async (req, res, next) => {
+
     const { loan_id } = req.body;
     try {
         const loan = await Loan.findById(loan_id);
@@ -102,7 +113,22 @@ exports.paybackLoan = async (req, res, next) => {
         loan.date = Date.now();
         loan.save();
         res.json({
-            success: true, message: "Loan refunded sucessfully.."
+            success: true, message: "Loan refunded sucessfully..."
+        });
+    } catch (error) {
+
+    }
+}
+
+exports.paymentCallback = async (req, res, next) => {
+    const { loan_id } = req.body;
+    try {
+        const loan = await Loan.findById(loan_id);
+        loan.status = "REFUNDED";
+        loan.date = Date.now();
+        loan.save();
+        res.json({
+            success: true, message: "Loan refunded sucessfully..."
         });
     } catch (error) {
 

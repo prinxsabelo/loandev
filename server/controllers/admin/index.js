@@ -6,43 +6,56 @@ const nodemailer = require('nodemailer');
 const mg = require('nodemailer-mailgun-transport');
 const auth = {
     auth: {
-        api_key: process.env.EMAIL_API_KEY,
-        domain: process.env.EMAIL_DOMAIN
-    }
+        api_key: 'cd30f6ec8c5ec9ff7149de34ab1092e3-1f1bd6a9-57915c60',
+        domain: 'sandboxed2c1b506f304c30b9cb1814fb21f877.mailgun.org'
+    },
 }
-let transporter = nodemailer.createTransport(mg(auth)
-
-)
+let transporter = nodemailer.createTransport(mg(auth))
 exports.regStaff = async (req, res, next) => {
     const { lastname, firstname, email } = req.body;
     //Generating fake password first..
-    const password = Math.random().toString(36).slice(-8);
+    // const password = Math.random().toString(36).slice(-8);
+    // res.json(process.env.EMAIL_API_KEY);
+    // res.json(process.env.EMAIL_DOMAIN);
+    // res.json(process.env.EMAIL_FROM)
 
     try {
+        const password = "password";
         const staff = await Staff.create({ lastname, firstname, email, password });
         upStaff = await Staff.findOne({ email });
         const resetToken = upStaff.getResetPasswordToken();
         await upStaff.save();
         const resetUrl = `http://localhost:3000/password-reset/${resetToken}`;
-        const message = `
-            <h1>We know you need your portal</h1>
-            <p>Please go to this link to reset ur password.. </p>
-            <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
-        `;
-        const mailOptions = {
-            from: 'bellosamuel64@gmail.com',
-            to: upStaff.email,
-            subject: "Dr Aliyu wants you.",
-            html: message
+        res.status(200).json({
+            success: true,
+            email,
+            message: "Staff was created successfully..",
+            resetUrl
         }
-        transporter.sendMail(mailOptions, function (err, data) {
-            if (err) {
-                return next(new ErrorResponse(err, 500));
-            }
-            else {
-                res.status(200).json({ success: true, message: "Let your staff check the email provided in his mail and reset password for access to app.. if not found check spam.." })
-            }
-        })
+        )
+
+
+        // const message = `
+        //     <h1>We know you need your portal</h1>
+        //     <p>Please go to this link to reset ur password.. </p>
+        //     <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
+        // `;
+
+        // const mailOptions = {
+        //     from: 'afolabifavouroluwatobi@gmail.com',
+        //     to: upStaff.email,
+        //     subject: "Dr Aliyu wants you.",
+        //     text: message
+        // }
+
+        // transporter.sendMail(mailOptions, function (err, data) {
+        //     if (err) {
+        //         return next(new ErrorResponse(err, 500));
+        //     }
+        //     else {
+        //         res.status(200).json({ success: true, message: "Let your staff check the email provided in his mail and reset password for access to app.." })
+        //     }
+        // })
 
 
     } catch (error) {
@@ -106,20 +119,20 @@ exports.updateLoanStatus = async (req, res, next) => {
                     subject = "Your loan offer is rejected"
                     message += `<p>So sorry, you can not recieve the loan.</p>`;
                 }
-                const mailOptions = {
-                    from: process.env.EMAIL_FROM,
-                    to: email,
-                    subject,
-                    html: message
-                }
-                transporter.sendMail(mailOptions, function (err, data) {
-                    if (err) {
-                        return next(new ErrorResponse(err, 500));
-                    }
-                    else {
-                        res.status(200).json({ success: true, message: "Loan updated successfully.." })
-                    }
-                })
+                // const mailOptions = {
+                //     from: process.env.EMAIL_FROM,
+                //     to: email,
+                //     subject,
+                //     html: message
+                // }
+                // transporter.sendMail(mailOptions, function (err, data) {
+                //     if (err) {
+                //         return next(new ErrorResponse(err, 500));
+                //     }
+                //     else {
+                res.status(200).json({ success: true, message: "Loan updated successfully.." })
+                //     }
+                // })
 
             } catch (error) {
 

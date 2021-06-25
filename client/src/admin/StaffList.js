@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useSnackbar } from 'react-simple-snackbar'
 import { useState, useEffect } from "react";
+import { NavLink } from 'react-router-dom'
 import Moment from 'react-moment';
 const StaffList = ({ history }) => {
     const [email, setEmail] = useState("");
@@ -12,12 +13,17 @@ const StaffList = ({ history }) => {
     const [staffsArr, setStaffsArr] = useState([]);
     const [staffDetail, setStaffDetail] = useState();
     const [loanDetail, setLoanDetail] = useState();
+    const [staffEmail, setStaffEmail] = useState("");
+    const [url, setUrl] = useState("");
     const [status, setStatus] = useState("PENDING");
     const config = {
         header: {
             "Content-Type": "application/json",
         },
     };
+    const showStaff = () => {
+        window.open(url)
+    }
     const loadStaffs = async () => {
         setStaffsArr([]);
         try {
@@ -45,6 +51,8 @@ const StaffList = ({ history }) => {
                 { email, lastname, firstname },
                 config
             );
+            setStaffEmail(data.email);
+            setUrl(data.resetUrl);
             openSnackbar(data.message);
             history.push("/admin/staffs");
             loadStaffs();
@@ -131,6 +139,25 @@ const StaffList = ({ history }) => {
                             </button>
                         </div>
                     </div>
+                    {staffEmail &&
+
+                        <div onClick={() => showStaff()} className="success-message px-4">
+                            <div>
+                                Email was created successfully..
+                            </div>
+                            <div>
+                                Visit link to access staff end..
+                            </div>
+                            <div>
+                                email = {staffEmail}
+                            </div>
+                            <div>
+                                password = password
+                            </div>
+
+                        </div>
+                    }
+
                 </form>
 
             </div>

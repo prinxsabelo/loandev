@@ -52,7 +52,7 @@ const sendToken = (staff, statusCode, res) => {
 
 
 
-//Staff can confirm to forgot password..
+// Staff can confirm to forgot password..
 // exports.forgotPassword = async (req, res, next) => {
 //     const { email } = req.body;
 //     try {

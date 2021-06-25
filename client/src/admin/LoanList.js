@@ -190,7 +190,14 @@ const LoanList = ({ history }) => {
                                 </div>
                             ))}
                         </div> :
-                        <div></div>
+                        <div className="flex flex-col w-full h-full items-center justify-center">
+                            <div className=" text-4xl uppercase">
+                                NO loan found..
+                            </div>
+                            <div className="text-lg mt-5">
+                                When staffs have created loan.. You'll see them here..
+                            </div>
+                        </div>
                     }
                 </div>
             </div>
