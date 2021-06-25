@@ -247,7 +247,7 @@ const Staff = ({ history }) => {
                         </div>
                         :
                         <div>
-                            xx
+
                         </div>}
                 </div>
             </div>
