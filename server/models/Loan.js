@@ -7,7 +7,7 @@ const LoanSchema = new Schema({
     },
     request_date: {
         type: Date,
-        default: Date.now()
+        default: Date.now
     },
     request_message: {
         type: String

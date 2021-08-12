@@ -134,6 +134,8 @@ const Staff = ({ history }) => {
             setLoader(true);
             fetchLoans();
             openSnackbar(data.message);
+            setAmount("");
+            setMessage("");
         } catch (error) {
             setLoader(false);
         }
@@ -226,9 +228,17 @@ const Staff = ({ history }) => {
                                             {loan.request_message}
                                         </div>
                                     </div>
-                                    <div className="text-sm font-bold pt-1">
-                                        Loan status = {loan.status}
-                                    </div>
+                                    {loan.status === 'REJECTED'
+                                        ?
+                                        <div className="text-sm font-bold pt-1 bg-red-200 text-gray-900 p-2" >
+                                            Loan status = {loan.status}
+                                        </div> :
+                                        <div className="text-sm font-bold pt-1" >
+                                            Loan status = {loan.status}
+                                        </div>
+                                    }
+
+
                                     {loan.status === "DISBURSED" &&
                                         <div className="mt-2">
                                             <PaystackHook loan={loan} />

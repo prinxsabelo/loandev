@@ -110,7 +110,7 @@ exports.paybackLoan = async (req, res, next) => {
     try {
         const loan = await Loan.findById(loan_id);
         loan.status = "REFUNDED";
-        loan.date = Date.now();
+        loan.refunded_date = Date.now();
         loan.save();
         res.json({
             success: true, message: "Loan refunded sucessfully..."
